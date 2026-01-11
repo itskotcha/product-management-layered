@@ -1,55 +1,41 @@
 // src/business/validators/productValidator.js
 class ProductValidator {
-    
-    validateProductData(data) {
-        const { name, price, category } = data;
-        
-        if (!name || !price || !category) {
-            throw new Error('Name, price, and category are required');
-        }
-        
-        return true;
+  /**
+   * ฟังก์ชันหลักสำหรับตรวจสอบข้อมูลสินค้า (ชื่อต้องตรงกับที่ Service เรียก)
+   */
+  validate(data) {
+    // 1. ตรวจสอบว่ามีข้อมูลครบถ้วนหรือไม่
+    if (
+      !data.name ||
+      data.price === undefined ||
+      data.price === null ||
+      !data.category
+    ) {
+      throw new Error("Name, price, and category are required");
     }
-    
-    validatePrice(price) {
-        if (price <= 0) {
-            throw new Error('Price must be greater than 0');
-        }
-        
-        if (price > 1000000) {
-            throw new Error('Price cannot exceed 1,000,000');
-        }
-        
-        return true;
+
+    // 2. ตรวจสอบเงื่อนไขราคา (เรียกใช้ validatePrice ภายในนี้เลย)
+    this.validatePrice(data.price);
+
+    return true;
+  }
+
+  // ตรวจสอบเงื่อนไขราคา (Business Rule)
+  validatePrice(price) {
+    if (parseFloat(price) <= 0) {
+      throw new Error("Price must be greater than 0");
     }
-    
-    validateStock(stock) {
-        if (stock < 0) {
-            throw new Error('Stock cannot be negative');
-        }
-        
-        return true;
+    return true;
+  }
+
+  // ตรวจสอบความถูกต้องของ ID
+  validateId(id) {
+    const numId = parseInt(id);
+    if (isNaN(numId) || numId <= 0) {
+      throw new Error("Invalid product ID");
     }
-    
-    validateCategory(category) {
-        const validCategories = ['Electronics', 'Clothing', 'Food', 'Books', 'Toys'];
-        
-        if (!validCategories.includes(category)) {
-            throw new Error(`Invalid category. Must be one of: ${validCategories.join(', ')}`);
-        }
-        
-        return true;
-    }
-    
-    validateId(id) {
-        const numId = parseInt(id);
-        
-        if (isNaN(numId) || numId <= 0) {
-            throw new Error('Invalid product ID');
-        }
-        
-        return numId;
-    }
+    return numId;
+  }
 }
 
 module.exports = new ProductValidator();
